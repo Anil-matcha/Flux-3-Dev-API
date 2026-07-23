@@ -14,6 +14,7 @@ A Python wrapper for **FLUX 3 Dev** — the faster, lower-cost variant of Black 
 ## Related Projects
 
 - [awesome-flux-3-api-prompts](https://github.com/Anil-matcha/awesome-flux-3-api-prompts) — FLUX 3 API guide, prompt engineering, and a curated prompt library
+- [flux-3-video-api](https://github.com/SamurAIGPT/flux-3-video-api) — Python wrapper focused on FLUX 3 Text-to-Video and Image-to-Video
 - [Seedance-2-API](https://github.com/Anil-matcha/Seedance-2-API) — Python SDK for ByteDance's Seedance 2.x video models
 - [awesome-ai-image-models](https://github.com/Anil-matcha/awesome-ai-image-models) — comparison of AI image generation models across providers
 - [Open-Generative-AI](https://github.com/Anil-matcha/Open-Generative-AI) — open-source, self-hosted AI image & video generation studio (200+ models)
