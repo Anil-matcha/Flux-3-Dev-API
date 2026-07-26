@@ -11,6 +11,16 @@ A Python wrapper for **FLUX 3 Dev** — the faster, lower-cost variant of Black 
 
 > ⚠️ **Status: FLUX 3 is rolling out in phases.** Black Forest Labs announced FLUX 3 on July 23, 2026. FLUX 3 Video and Action entered early access immediately; FLUX 3 Image (including Dev) is rolling out in the following weeks. Endpoints in this SDK will activate automatically on [MuAPI](https://muapi.ai/flux-3?utm_source=github&utm_medium=readme&utm_campaign=flux-3-dev-api) as Black Forest Labs opens general availability — no code changes needed. Track live status at [muapi.ai/flux-3](https://muapi.ai/flux-3?utm_source=github&utm_medium=readme&utm_campaign=flux-3-dev-api).
 
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=pq0B_A0K770">
+    <img src="docs/assets/flux-3-api-video-thumbnail.png" alt="FLUX 3 API: Image & Video Generation from One Multimodal Model" width="640">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=pq0B_A0K770"><b>📺 FLUX 3 API: Image & Video Generation from One Multimodal Model →</b></a>
+</p>
+
 ## Related Projects
 
 - [awesome-flux-3-api-prompts](https://github.com/Anil-matcha/awesome-flux-3-api-prompts) — FLUX 3 API guide, prompt engineering, and a curated prompt library
