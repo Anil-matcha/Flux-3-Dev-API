@@ -24,7 +24,9 @@ class Flux3DevAPI:
 
     def generate(self, prompt, aspect_ratio="1:1", resolution="1k"):
         """
-        Submits a FLUX 3 Dev text-to-image generation task.
+        Submits a FLUX 3 Dev text-to-image generation task. COMING SOON on MuAPI
+        (not yet enabled — this method will 404/error until Black Forest Labs
+        opens general availability and MuAPI activates the route).
 
         FLUX 3 Dev is the faster, lower-cost variant of Black Forest Labs' FLUX 3
         frontier model — ideal for rapid iteration, prototyping, and high-volume
@@ -49,7 +51,8 @@ class Flux3DevAPI:
 
     def text_to_image(self, prompt, aspect_ratio="1:1", resolution="2k"):
         """
-        Submits a FLUX 3 (flagship) Text-to-Image generation task.
+        Submits a FLUX 3 (flagship) Text-to-Image generation task. COMING SOON
+        on MuAPI (not yet enabled).
 
         Higher fidelity than FLUX 3 Dev — use this when quality matters more
         than latency or cost.
@@ -69,7 +72,8 @@ class Flux3DevAPI:
 
     def image_to_image(self, prompt, images_list, aspect_ratio="1:1", resolution="2k"):
         """
-        Submits a FLUX 3 Image-to-Image (edit) task.
+        Submits a FLUX 3 Image-to-Image (edit) task. COMING SOON on MuAPI
+        (not yet enabled).
 
         Edit or restyle an existing image using a text instruction plus up to
         4 reference images, preserving subject identity and scene structure.
@@ -89,18 +93,18 @@ class Flux3DevAPI:
         }
         return self._post_request(endpoint, payload)
 
-    def text_to_video(self, prompt, aspect_ratio="16:9", resolution="720p", duration=5, generate_audio=True):
+    def text_to_video(self, prompt, aspect_ratio="9:16", resolution="720p", duration=5, generate_audio=True):
         """
-        Submits a FLUX 3 Text-to-Video generation task.
+        Submits a FLUX 3 Text-to-Video generation task. LIVE on MuAPI.
 
         Generates a cinematic video clip with optional native synchronized
         audio from a single unified model.
 
         :param prompt: Text prompt describing the video scene and motion.
-        :param aspect_ratio: Output aspect ratio.
-        :param resolution: Output resolution ('480p', '720p', or '1080p').
-        :param duration: Video duration in seconds (4-10).
-        :param generate_audio: Whether to generate synchronized native audio.
+        :param aspect_ratio: Output aspect ratio ('21:9', '2:1', '16:9', '4:3', '1:1', '3:4', '9:16').
+        :param resolution: Output resolution ('720p' or '1080p'). $0.25/sec at 720p, $0.42/sec at 1080p.
+        :param duration: Video duration in seconds (5-20), billed rounded up to the next second.
+        :param generate_audio: Whether to generate synchronized native audio, no extra charge.
         :return: JSON response with request_id.
         """
         endpoint = f"{self.base_url}/flux-3-text-to-video"
@@ -113,31 +117,32 @@ class Flux3DevAPI:
         }
         return self._post_request(endpoint, payload)
 
-    def image_to_video(self, prompt, images_list, aspect_ratio="16:9", resolution="720p", duration=5, generate_audio=True):
+    def image_to_video(self, prompt, image_url, aspect_ratio=None, resolution="720p", duration=5, generate_audio=True):
         """
-        Submits a FLUX 3 Image-to-Video generation task.
+        Submits a FLUX 3 Image-to-Video generation task. LIVE on MuAPI.
 
         Animates a still image into a cinematic clip with optional native
         synchronized audio, keeping motion physically consistent with the
         source frame.
 
         :param prompt: Text prompt describing the desired motion.
-        :param images_list: List containing the start-frame image URL.
-        :param aspect_ratio: Output aspect ratio.
-        :param resolution: Output resolution ('480p', '720p', or '1080p').
-        :param duration: Video duration in seconds (4-10).
-        :param generate_audio: Whether to generate synchronized native audio.
+        :param image_url: URL of the start-frame image (PNG/JPEG/WebP).
+        :param aspect_ratio: Output aspect ratio, optional ('21:9', '2:1', '16:9', '4:3', '1:1', '3:4', '9:16').
+        :param resolution: Output resolution ('720p' or '1080p'). $0.25/sec at 720p, $0.42/sec at 1080p.
+        :param duration: Video duration in seconds (5-20), billed rounded up to the next second.
+        :param generate_audio: Whether to generate synchronized native audio, no extra charge.
         :return: JSON response with request_id.
         """
         endpoint = f"{self.base_url}/flux-3-image-to-video"
         payload = {
             "prompt": prompt,
-            "images_list": images_list,
-            "aspect_ratio": aspect_ratio,
+            "image_url": image_url,
             "resolution": resolution,
             "duration": duration,
             "generate_audio": generate_audio,
         }
+        if aspect_ratio:
+            payload["aspect_ratio"] = aspect_ratio
         return self._post_request(endpoint, payload)
 
     # ------------------------------------------------------------------
