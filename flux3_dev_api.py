@@ -6,12 +6,19 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
+DEFAULT_REQUEST_TIMEOUT = 30
+
+
 class Flux3DevAPI:
-    def __init__(self, api_key=None):
+    def __init__(self, api_key=None, request_timeout=DEFAULT_REQUEST_TIMEOUT):
         """
         Initialize the FLUX 3 Dev API client.
         :param api_key: Your MuAPI.ai API key. Defaults to MUAPI_API_KEY environment variable.
+        :param request_timeout: Maximum socket inactivity time in seconds for each API request.
         """
+        if request_timeout <= 0:
+            raise ValueError("request_timeout must be greater than zero.")
+        self.request_timeout = request_timeout
         self.api_key = api_key or os.getenv("MUAPI_API_KEY")
         if not self.api_key:
             raise ValueError("API Key is required. Set MUAPI_API_KEY in .env or pass it to the constructor.")
@@ -150,7 +157,7 @@ class Flux3DevAPI:
     # ------------------------------------------------------------------
 
     def _post_request(self, endpoint, payload):
-        response = requests.post(endpoint, json=payload, headers=self.headers)
+        response = requests.post(endpoint, json=payload, headers=self.headers, timeout=self.request_timeout)
         response.raise_for_status()
         return response.json()
 
@@ -170,17 +177,19 @@ class Flux3DevAPI:
 
         with open(file_path, "rb") as file_data:
             files = {"file": file_data}
-            response = requests.post(endpoint, headers=headers, files=files)
+            response = requests.post(endpoint, headers=headers, files=files, timeout=self.request_timeout)
 
         response.raise_for_status()
         return response.json()
 
-    def get_result(self, request_id):
+    def get_result(self, request_id, timeout=None):
         """
         Polls for the result of a generation task.
+
+        :param timeout: Optional socket inactivity timeout in seconds. Defaults to the client's request timeout.
         """
         endpoint = f"{self.base_url}/predictions/{request_id}/result"
-        response = requests.get(endpoint, headers=self.headers)
+        response = requests.get(endpoint, headers=self.headers, timeout=self.request_timeout if timeout is None else timeout)
         response.raise_for_status()
         return response.json()
 
@@ -188,9 +197,13 @@ class Flux3DevAPI:
         """
         Waits for the generation task to complete and returns the result.
         """
-        start_time = time.time()
-        while time.time() - start_time < timeout:
-            result = self.get_result(request_id)
+        start_time = time.monotonic()
+        while True:
+            remaining = timeout - (time.monotonic() - start_time)
+            if remaining <= 0:
+                break
+
+            result = self.get_result(request_id, timeout=min(self.request_timeout, remaining))
             status = result.get("status")
 
             if status == "completed":
@@ -198,8 +211,12 @@ class Flux3DevAPI:
             elif status == "failed":
                 raise Exception(f"Generation failed: {result.get('error')}")
 
-            print(f"Status: {status}. Waiting {poll_interval} seconds...")
-            time.sleep(poll_interval)
+            remaining = timeout - (time.monotonic() - start_time)
+            if remaining <= 0:
+                break
+            sleep_for = min(poll_interval, remaining)
+            print(f"Status: {status}. Waiting {sleep_for} seconds...")
+            time.sleep(sleep_for)
 
         raise TimeoutError("Timed out waiting for generation to complete.")
 
